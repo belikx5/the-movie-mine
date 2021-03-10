@@ -1,21 +1,49 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Provider } from 'react-redux'
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { setNavigator } from './src/services/customNavigation'
+import store from './src/store'
+
+import WelcomeScreen from './src/screens/WelcomeScreen'
+import SigninScreen from './src/screens/SigninScreen'
+import { Image } from 'react-native';
+import { mainActionColor, mainBackgroundColor } from './src/styles/_common';
+
+const ChatStack = createStackNavigator();
+
+// const AuthFlow = () => {
+//   return (
+//     <NavigationContainer>
+//       <ChatStack.Navigator  >
+//         <ChatStack.Screen component={WelcomeScreen} />
+//       </ChatStack.Navigator>
+//     </NavigationContainer>
+//   )
+// }
+const AuthFlowHeaderStyles = {
+  headerRight: () => <Image source={require('./assets/app-imgs/TMM-logo-small.png')} />,
+  headerTintColor: mainActionColor,
+  headerStyle: {
+    backgroundColor: mainBackgroundColor,
+  }
+}
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <Provider store={store}>
+      <NavigationContainer
+        ref={(navigator) => {
+          setNavigator(navigator);
+        }}>
+        <ChatStack.Navigator screenOptions={{ headerStatusBarHeight: 40 }}>
+          <ChatStack.Screen name="Welcome" component={WelcomeScreen} options={{ header: () => null }} />
+          <ChatStack.Screen name="Signin" component={SigninScreen} options={{ ...AuthFlowHeaderStyles, title: "Sign in" }} />
+          <ChatStack.Screen name="Signup" component={SigninScreen} options={{ ...AuthFlowHeaderStyles, title: "Sign up" }} />
+        </ChatStack.Navigator>
+      </NavigationContainer>
+    </Provider>
+
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

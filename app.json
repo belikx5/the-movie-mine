@@ -8,7 +8,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor":  "#0B123F"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -17,16 +17,27 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "backgroundColor": "#0B123F"
     },
     "android": {
+      "backgroundColor": "#0B123F",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
+        "backgroundColor":  "#0B123F"
       }
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "backgroundColor" : "#0B123F",
+    "extra": {
+      "apiKey": "AIzaSyCvgyVSo3z9eygMLCROVTciIa5b8Q",
+      "authDomain": "the-movie-mine.firebaseapp.com",
+      "projectId": "the-movie-mine",
+      "storageBucket":"the-movie-mine.appspot.com",
+      "messagingSenderId": "968538550729",
+      "appId": "1:968538550729:web:792209098b43b529cc7818"
     }
   }
 }
