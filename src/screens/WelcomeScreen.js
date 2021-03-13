@@ -12,8 +12,8 @@ const WelcomeScreen = ({ navigation }) => {
         <View style={styles.container}>
             <View style={styles.content}>
                 <SvgXml xml={logo} />
-                <Image style={styles.bigLogo} source={require('../../assets/app-imgs/TMM-logo.png')} />
-                <TouchableOpacity style={[btn.wrapper, styles.button]} onPress={() => navigation.navigate('Signin')}>
+                <Image style={styles.bigLogo} source={require("../../assets/app-imgs/TMM-logo.png")} />
+                <TouchableOpacity style={[btn.wrapper, styles.button]} onPress={() => navigation.navigate("Auth", { title: "Sign in" })}>
                     <Feather name="mail" size={24} color={mainActionColor} />
                     <Text style={btn.text}>Sign in with email</Text>
                 </TouchableOpacity>
@@ -23,7 +23,7 @@ const WelcomeScreen = ({ navigation }) => {
                 </TouchableOpacity>
                 <View style={link.linkBlock}>
                     <Text style={link.linkBlockText}>Need an account?</Text>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.navigate("Auth", { title: "Sign up" })}>
                         <Text style={[link.linkBlockText, link.linkBlockTextAction]}>Sign up!</Text>
                     </TouchableOpacity> 
                 </View>

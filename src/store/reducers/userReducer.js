@@ -1,4 +1,4 @@
-import { AUTH_ERROR, AUTH_SUCCESS, FETCH_USER, SIGN_OUT, SIGN_UP } from '../actionTypes';
+import { AUTH_ERROR, AUTH_SUCCESS, FETCH_USER, SIGN_OUT, SIGN_UP, CLEAR_ERROR } from '../actionTypes';
 
 const initialState = {
     currentUser: {},
@@ -17,6 +17,8 @@ export default (state = initialState, action) => {
             return {...state, currentUser: action.payload};
         case FETCH_USER:
             return {...state, currentUser: action.payload};
+        case CLEAR_ERROR:
+            return {...state, auth: { error: '' }}
         case SIGN_OUT:
             return initialState;
         default:

@@ -1,10 +1,19 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Dimensions } from 'react-native'
+import {
+    View,
+    Text,
+    TextInput,
+    StyleSheet,
+    TouchableOpacity,
+    Keyboard,
+    ActivityIndicator
+} from 'react-native'
 import { FontAwesome } from '@expo/vector-icons'
 import validate from '../services/formValidation'
-import { inputField, errorColor, mainGreyColor, btn, mainActionColor, link } from '../styles/_common'
+import defineAuthError from '../services/authErrorDefine'
+import * as commonStyles from '../styles/_common'
 
-const AuthForm = ({ navigation }) => {
+const AuthForm = ({ navigation, clearAuthError, onSubmit, auth, linkQuestion, linkValue }) => {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -13,12 +22,13 @@ const AuthForm = ({ navigation }) => {
         password: "",
     });
     const [hidePassword, setHidePassword] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        //navigation.addListener("focus", () => {
-        //clearError()
-        // })
-        //return () => navigation.removeListener("focus", () => { clearError() })
+        navigation.addListener("focus", () => {
+            clearAuthError()
+        })
+        return () => navigation.removeListener("focus", () => { clearAuthError() })
     }, [])
 
     const validateField = (fieldName, value) => {
@@ -35,22 +45,31 @@ const AuthForm = ({ navigation }) => {
             ? true
             : false;
     };
+    const handleSubmit = () => {
+        Keyboard.dismiss();
+        const emailError = validate("email", email);
+        const passwordError = validate("password", password);
 
+        if (!emailError && !passwordError) {
+            setLoading(true);
+            onSubmit(email, password, () => navigation.navigate('MainFlow'), () => setLoading(false));
+        }
+    };
     return (
         <View style={styles.container}>
             <View>
-                <Text style={inputField.inputName}>Email</Text>
+                <Text style={commonStyles.inputField.inputName}>Email</Text>
                 <TextInput
-                    style={validationErrors.email ? [inputField.input, styles.inputError] : inputField.input}
+                    style={validationErrors.email ? [commonStyles.inputField.input, styles.inputError] : commonStyles.inputField.input}
                     autoCapitalize="none"
                     autoCorrect={false}
                     placeholder="example@example.com"
-                    placeholderTextColor={mainGreyColor}
+                    placeholderTextColor={commonStyles.mainGreyColor}
                     value={email}
                     onChangeText={(text) => setEmail(text)}
-                    onEndEditing={(e) => validateField("email", email)}
+                    onEndEditing={() => validateField("email", email)}
                 />
-                <Text style={inputField.inputName}>Password:</Text>
+                <Text style={commonStyles.inputField.inputName}>Password:</Text>
                 <View style={validationErrors.password ? [styles.passwordWrapper, styles.inputError] : styles.passwordWrapper}>
                     <TextInput
                         style={styles.passwordField}
@@ -59,27 +78,35 @@ const AuthForm = ({ navigation }) => {
                         autoCorrect={false}
                         value={password}
                         onChangeText={(text) => setPassword(text)}
-                        onEndEditing={(e) => validateField("password", password)}
+                        onEndEditing={() => validateField("password", password)}
                     />
                     {hidePassword ? (
                         <FontAwesome
                             name="eye"
                             size={24}
-                            color={mainGreyColor}
+                            color={commonStyles.mainGreyColor}
                             onPress={() => setHidePassword(false)}
                         />
                     ) : (
                         <FontAwesome
                             name="eye-slash"
                             size={24}
-                            color={mainGreyColor}
+                            color={commonStyles.mainGreyColor}
                             onPress={() => setHidePassword(true)}
                         />
                     )}
                 </View>
-                <TouchableOpacity style={isSubmitDisbled() ? [btn.wrapper, styles.orangeButton, styles.disabledButton] : [btn.wrapper, styles.orangeButton]} disabled={isSubmitDisbled()}>
-                    <Text style={btn.text}>Submit</Text>
-                </TouchableOpacity>
+                {loading
+                    ? <ActivityIndicator size="small" color="lightskyblue" />
+                    : (
+                        <TouchableOpacity
+                            style={isSubmitDisbled() ? [commonStyles.btn.wrapper, styles.orangeButton, styles.disabledButton] : [commonStyles.btn.wrapper, styles.orangeButton]}
+                            disabled={isSubmitDisbled()}
+                            onPress={handleSubmit}
+                        >
+                            <Text style={commonStyles.btn.text}>Submit</Text>
+                        </TouchableOpacity>
+                    )}
                 {validationErrors.email || validationErrors.password ? (
                     validationErrors.email ? (
                         <Text style={styles.errorMessage}>{validationErrors.email}</Text>
@@ -87,13 +114,13 @@ const AuthForm = ({ navigation }) => {
                         <Text style={styles.errorMessage}>{validationErrors.password}</Text>
                     )
                 ) : null}
-                {/* {auth.authError ? <Text style={styles.errorMessage}>{defineAuthError(auth.authError)}</Text> : null} */}
+                {auth.error ? <Text style={styles.errorMessage}>{defineAuthError(auth.error)}</Text> : null}
             </View>
 
-            <View style={[link.linkBlock, styles.linkContainer]}>
-                <Text style={link.linkBlockText}>Need an account?</Text>
-                <TouchableOpacity>
-                    <Text style={[link.linkBlockText, link.linkBlockTextAction]}>Sign up!</Text>
+            <View style={[commonStyles.link.linkBlock, styles.linkContainer]}>
+                <Text style={commonStyles.link.linkBlockText}>{linkQuestion}</Text>
+                <TouchableOpacity onPress={() => navigation.navigate("Auth", { title: linkValue === "Sign in!" ? "Sign in" : "Sign up" })}>
+                    <Text style={[commonStyles.link.linkBlockText, commonStyles.link.linkBlockTextAction]}>{linkValue}</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -109,15 +136,15 @@ const styles = StyleSheet.create({
         marginTop: '40%',
     },
     inputError: {
-        borderColor: errorColor
+        borderColor: commonStyles.errorColor
     },
     errorMessage: {
-        color: errorColor,
+        color: commonStyles.errorColor,
         fontSize: 16,
         textAlign: 'center'
     },
     passwordWrapper: {
-        ...inputField.input,
+        ...commonStyles.inputField.input,
         flexDirection: 'row',
         alignItems: 'center'
     },
@@ -131,10 +158,10 @@ const styles = StyleSheet.create({
         width: '60%',
         marginTop: '10%',
         marginBottom: 10,
-        borderColor: mainActionColor,
+        borderColor: commonStyles.mainActionColor,
     },
     disabledButton: {
-        borderColor: mainGreyColor,
+        borderColor: commonStyles.mainGreyColor,
         backgroundColor: 'rgba(202,202,202,0.2)',
     },
     linkContainer: {

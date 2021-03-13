@@ -1,5 +1,17 @@
-export const AUTH_SUCCESS = "AUTH_SUCCESS";
-export const AUTH_ERROR = "AUTH_ERROR";
-export const SIGN_OUT = "SIGN_OUT";
-export const SIGN_UP = "SIGN_UP";
-export const FETCH_USER = "FETCH_USER";
+export const AUTH_SUCCESS = 'AUTH_SUCCESS';
+export const AUTH_ERROR = 'AUTH_ERROR';
+export const SIGN_OUT = 'SIGN_OUT';
+export const SIGN_UP = 'SIGN_UP';
+export const FETCH_USER = 'FETCH_USER';
+export const CLEAR_ERROR = 'CLEAR_ERROR';
+
+export const FETCH_NOW_PLAYING = 'FETCH_NOW_PLAYING';
+export const FETCH_TOP_RATED = 'FETCH_TOP_RATED';
+export const FETCH_GENRES = 'FETCH_GENRES';
+export const FETCH_MOVIES_BY_GENRE = 'FETCH_MOVIES_BY_GENRE';
+export const FETCH_MOVIES_BY_NAME = 'FETCH_MOVIES_BY_NAME';
+
+export const FETCH_MOVIE_DETAILS = 'FETCH_MOVIE_DETAILS';
+export const FETCH_MOVIE_TRAILER = 'FETCH_MOVIE_TRAILER';
+export const FETCH_SIMILAR_MOVIES = 'FETCH_SIMILAR_MOVIES';
+export const FETCH_MOVIE_CAST = 'FETCH_MOVIE_CAST';

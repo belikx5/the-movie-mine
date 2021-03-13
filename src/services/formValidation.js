@@ -12,7 +12,6 @@ export default (fieldName, value) => {
                 return "";
         }
     } else {
-        return `${fieldName[0].toUpperCase() + fieldName.slice(1)
-            } field can\'t be empty`;
+        return `${fieldName[0].toUpperCase() + fieldName.slice(1)} field can\'t be empty`;
     }
 };

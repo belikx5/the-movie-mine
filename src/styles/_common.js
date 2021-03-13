@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native'
 
 export const mainBackgroundColor = '#0B123F';
+export const mainHeaderColor = '#0F006B';
 export const mainGreyColor = '#CACACA';
 export const mainActionColor = '#FEBC11';
 export const errorColor = '#FF3333';
@@ -58,4 +59,11 @@ export const link = StyleSheet.create({
     linkBlockTextAction: {
         color: mainActionColor
     }
-}) 
+})
+
+export const h2 = StyleSheet.create({
+    text: {
+        fontSize: 24,
+        color: '#fff'
+    }
+})

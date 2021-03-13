@@ -1,6 +1,8 @@
-import { combineReducers, applyMiddleware } from 'redux'
+import { combineReducers } from 'redux'
 import userReducer from './userReducer'
+import moviesReducer from './moviesReducer'
 
 export default combineReducers({
-    user: userReducer
+    user: userReducer,
+    movies: moviesReducer
 })
