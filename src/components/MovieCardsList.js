@@ -1,7 +1,8 @@
 import React from 'react'
-import { View, Text, FlatList, StyleSheet } from 'react-native'
-import { Picker } from '@react-native-picker/picker';
-import { AntDesign } from '@expo/vector-icons';
+import { View, Text, FlatList, StyleSheet, Pressable } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
+import { Picker } from '@react-native-picker/picker'
+import { AntDesign } from '@expo/vector-icons'
 import { h2, mainActionColor, mainBackgroundColor } from '../styles/_common'
 import MovieCard from './MovieCard'
 
@@ -13,8 +14,12 @@ const MovieCardsList = ({
     selectedGenre,
     setSelectedGenre
 }) => {
-
-    const renderItem = ({ item }) => <MovieCard movie={item} />
+    const navigation = useNavigation();
+    const renderItem = ({ item }) => (
+        <Pressable onPress={() => navigation.navigate("Details", { movieId: item.id })}>
+            <MovieCard movie={item} />
+        </Pressable>
+    )
 
     const genreDropdown = () => {
         return (
@@ -26,11 +31,6 @@ const MovieCardsList = ({
                     color={mainActionColor} />
                 <Picker
                     style={styles.genrePicker}
-                    itemStyle={{
-                        backgroundColor: 'green',
-                        marginLeft: 0,
-                        paddingLeft: 15
-                    }}
                     mode="dropdown"
                     selectedValue={selectedGenre}
                     onValueChange={itemValue => {
@@ -71,12 +71,6 @@ const styles = StyleSheet.create({
     },
     moviesList: {
         alignSelf: 'center',
-    },
-    genreContainer: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between',
-        width: '100%'
     },
     genrePickerWrapper: {
         width: '45%',

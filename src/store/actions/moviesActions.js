@@ -12,12 +12,13 @@ import {
 } from '../actionTypes';
 
 const POSTER_URL = 'https://image.tmdb.org/t/p/original';
-const YOUTUBE_URL = 'https://www.youtube.com/watch?v=';
+const YOUTUBE_URL = 'https://www.youtube.com/embed/';
 
 export const fetchMovieDetails = movieId => async dispatch => {
     try {
         const { data } = await tmdb.get(`/movie/${movieId}`);
         const poster = data['poster_path'] !== null ? POSTER_URL + data['poster_path'] : '';
+        const backPoster = data['backdrop_path'] !== null ? POSTER_URL + data['backdrop_path'] : poster;
         const movie = {
             title: data['title'],
             id: data['id'],
@@ -27,6 +28,7 @@ export const fetchMovieDetails = movieId => async dispatch => {
             overview: data['overview'],
             rating: data['vote_average'],
             poster,
+            backPoster,
             releaseDate: data['release_date'],
             runtime: data['runtime'],
         }
@@ -39,13 +41,16 @@ export const fetchMovieDetails = movieId => async dispatch => {
 export const fetchMovieCast = movieId => async dispatch => {
     try {
         const { data } = await tmdb.get(`/movie/${movieId}/credits`);
-        const cast = data['cast'].length > 20 ? data['cast'].slice(0, 20) : data['cast']; 
-        const modifiedCast = cast.map(c => ({
-            id: c['id'],
-            name: c['name'], 
-            character: c['character'],
-            image: POSTER_URL + c['profile_path']
-        }));
+        const cast = data['cast'].length > 20 ? data['cast'].slice(0, 20) : data['cast'];
+        const modifiedCast = cast.map(c => {
+            const image = c['profile_path'] !== null ? POSTER_URL + c['profile_path'] : '';
+            return {
+                id: c['id'],
+                name: c['name'],
+                character: c['character'],
+                image
+            }
+        });
         dispatch({ type: FETCH_MOVIE_CAST, payload: modifiedCast });
     } catch (error) {
         dispatch({ type: FETCH_MOVIE_CAST, payload: [] });
@@ -54,7 +59,8 @@ export const fetchMovieCast = movieId => async dispatch => {
 export const fetchMovieDetailsTrailer = movieId => async dispatch => {
     try {
         const { data } = await tmdb.get(`/movie/${movieId}/videos`);
-        const videoUrl = YOUTUBE_URL + data['results'][0];
+        const requiredVideo = data['results'].filter(v => v['type'] === 'Trailer' && v['site'] === 'YouTube')[0];
+        const videoUrl = YOUTUBE_URL + requiredVideo['key'];
         dispatch({ type: FETCH_MOVIE_TRAILER, payload: videoUrl });
     } catch (error) {
         dispatch({ type: FETCH_MOVIE_TRAILER, payload: '' });

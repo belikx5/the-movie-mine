@@ -1,11 +1,67 @@
 import firebase from '../../config/firebase'
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { AUTH_ERROR, AUTH_SUCCESS, FETCH_USER, SIGN_OUT, SIGN_UP, CLEAR_ERROR } from '../actionTypes';
+import {
+    AUTH_ERROR,
+    AUTH_SUCCESS,
+    FETCH_USER,
+    SIGN_OUT,
+    SIGN_UP,
+    CLEAR_ERROR,
+    ADD_TO_WATCHLIST,
+    REMOVE_FROM_WATCHLIST,
+    FETCH_WATCHLIST
+} from '../actionTypes';
+
+export const fetchWatchList = () => dispatch => {
+    firebase.firestore()
+    .collection('watchlists')
+    .doc(firebase.auth().currentUser?.uid)
+    .get()
+    .then(res => {
+        if(res.exists){
+            dispatch({ type: FETCH_WATCHLIST, payload: res.data().watchlist})
+        } else {
+            dispatch({ type: FETCH_WATCHLIST, payload: []})
+        }
+    }).catch(() => {
+        dispatch({ type: FETCH_WATCHLIST, payload: []})
+    })
+}
+
+export const addToWatchList = movie => (dispatch, getState) => {
+    const modifiedMovie = {
+        id: movie.id,
+        title: movie.title,
+        backPoster: movie.backPoster,
+        rating: movie.rating
+    };
+    console.log(modifiedMovie)
+    firebase.firestore()
+        .collection('watchlists')
+        .doc(firebase.auth().currentUser?.uid)
+        .update({
+            watchlist: [...getState().user.watchlist, modifiedMovie]
+        }).then(() => {
+            dispatch({ type: ADD_TO_WATCHLIST, payload: modifiedMovie });
+        })
+}
+
+export const removeFromWatchList = movieId => (dispatch, getState) => {
+    firebase.firestore()
+        .collection('watchlists')
+        .doc(firebase.auth().currentUser?.uid)
+        .update({
+            watchlist: [...getState().user.watchlist.filter(m => m.id !== movieId)]
+        }).then(() => {
+            dispatch({ type: REMOVE_FROM_WATCHLIST, payload: movieId });
+        })
+
+}
 
 export const tryLocalSignin = (onSuccess, onError) => async dispatch => {
     const token = await AsyncStorage.getItem('token');
-    if(token){
-        dispatch({type: AUTH_SUCCESS});
+    if (token) {
+        dispatch({ type: AUTH_SUCCESS });
         onSuccess();
     } else {
         onError();
@@ -44,8 +100,16 @@ export const signUp = (email, password, onSuccess, onError) => dispatch => {
                 .doc(res.user?.uid)
                 .set(user)
                 .then(() => {
-                    dispatch({ type: SIGN_UP, payload: user })
-                    onSuccess();
+                    firebase.firestore()
+                    .collection('watchlists')
+                    .doc(res.user?.uid)
+                    .set({
+                        watchlist: []
+                    }).then(() => {
+                        dispatch({ type: SIGN_UP, payload: user })
+                        onSuccess();
+                    })
+                   
                 })
         })
         .catch(err => {

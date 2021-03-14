@@ -25,10 +25,10 @@ const HomeScreen = ({
     const [selectedGenre, setSelectedGenre] = useState(28);
     const [searchTerm, setSearchTerm] = useState('');
 
-    console.log(movies.searchMovies)
+
     useEffect(() => {
-        //     fetchNowPlaying();
-        //    fetchTopRated();
+        fetchNowPlaying();
+        fetchTopRated();
         fetchGenres();
         fetchMoviesByGenre(selectedGenre);
     }, [])

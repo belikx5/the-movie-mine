@@ -1,10 +1,15 @@
+// USER ACTIONS
 export const AUTH_SUCCESS = 'AUTH_SUCCESS';
 export const AUTH_ERROR = 'AUTH_ERROR';
 export const SIGN_OUT = 'SIGN_OUT';
 export const SIGN_UP = 'SIGN_UP';
 export const FETCH_USER = 'FETCH_USER';
 export const CLEAR_ERROR = 'CLEAR_ERROR';
+export const ADD_TO_WATCHLIST= 'ADD_TO_WATCHLIST'; 
+export const REMOVE_FROM_WATCHLIST= 'REMOVE_FROM_WATCHLIST'; 
+export const FETCH_WATCHLIST= 'FETCH_WATCHLIST'; 
 
+// MOVIE ACTIONS
 export const FETCH_NOW_PLAYING = 'FETCH_NOW_PLAYING';
 export const FETCH_TOP_RATED = 'FETCH_TOP_RATED';
 export const FETCH_GENRES = 'FETCH_GENRES';

@@ -6,7 +6,7 @@ import { mainActionColor, mainGreyColor } from '../styles/_common'
 const CastActorItem = ({ actor }) => {
     return (
         <View style={styles.itemContaner}>
-            <Image style={styles.itemImage} source={actor.image ? { uri: actor.image} : require("../../assets/app-imgs/avengers.jpg")} />
+            <Image style={styles.itemImage} source={actor.image ? { uri: actor.image} : require("../../assets/app-imgs/actor-not-found.jpg")} />
             <LinearGradient
                 colors={["transparent", "rgb(23,23,23)"]}
                 style={styles.itemGradientBackground}/>
