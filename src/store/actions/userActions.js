@@ -9,23 +9,28 @@ import {
     CLEAR_ERROR,
     ADD_TO_WATCHLIST,
     REMOVE_FROM_WATCHLIST,
-    FETCH_WATCHLIST
+    FETCH_WATCHLIST,
+    EDIT_PROFILE
 } from '../actionTypes';
 
+
+
+
 export const fetchWatchList = () => dispatch => {
+    //console.log('USER:',firebase.auth().currentUser)
     firebase.firestore()
-    .collection('watchlists')
-    .doc(firebase.auth().currentUser?.uid)
-    .get()
-    .then(res => {
-        if(res.exists){
-            dispatch({ type: FETCH_WATCHLIST, payload: res.data().watchlist})
-        } else {
-            dispatch({ type: FETCH_WATCHLIST, payload: []})
-        }
-    }).catch(() => {
-        dispatch({ type: FETCH_WATCHLIST, payload: []})
-    })
+        .collection('watchlists')
+        .doc(firebase.auth().currentUser?.uid)
+        .get()
+        .then(res => {
+            if (res.exists) {
+                dispatch({ type: FETCH_WATCHLIST, payload: res.data().watchlist })
+            } else {
+                dispatch({ type: FETCH_WATCHLIST, payload: [] })
+            }
+        }).catch(() => {
+            dispatch({ type: FETCH_WATCHLIST, payload: [] })
+        })
 }
 
 export const addToWatchList = movie => (dispatch, getState) => {
@@ -55,11 +60,47 @@ export const removeFromWatchList = movieId => (dispatch, getState) => {
         }).then(() => {
             dispatch({ type: REMOVE_FROM_WATCHLIST, payload: movieId });
         })
+}
+
+
+export const editProfile = (newUserData, onSuccess, onError) => dispatch => {
+    saveAvatar(newUserData.avatar).then(url => {
+        const user = {
+            ...newUserData,
+            avatar: url
+        };
+        firebase.firestore()
+            .collection('users')
+            .doc(firebase.auth().currentUser?.uid)
+            .update(user)
+            .then(() => {
+                dispatch({ type: EDIT_PROFILE, payload: user })
+                onSuccess();
+            })
+    }).catch(() => {
+        onError();
+    })
+}
+
+const saveAvatar = async avatarUri => {
+    if (avatarUri.trim().length) {
+        const photoUri = `chat/${firebase.auth().currentUser?.uid
+            }/${Math.random().toString(36)}`;
+
+        const response = await fetch(avatarUri);
+        const blob = await response.blob();
+        const fileRef = firebase.storage().ref().child(photoUri);
+        await fileRef.put(blob);
+        return await fileRef.getDownloadURL();
+    } else {
+        return Promise.resolve('')
+    }
 
 }
 
 export const tryLocalSignin = (onSuccess, onError) => async dispatch => {
     const token = await AsyncStorage.getItem('token');
+
     if (token) {
         dispatch({ type: AUTH_SUCCESS });
         onSuccess();
@@ -76,8 +117,8 @@ export const signIn = (email, password, onSuccess, onError) => dispatch => {
             await AsyncStorage.setItem('token', token || '');
             dispatch({ type: AUTH_SUCCESS })
             onSuccess()
-            //navigate('Welcome')
         }).catch(err => {
+            console.log(err.code)
             dispatch({ type: AUTH_ERROR, payload: err.code });
             onError();
         })
@@ -101,15 +142,15 @@ export const signUp = (email, password, onSuccess, onError) => dispatch => {
                 .set(user)
                 .then(() => {
                     firebase.firestore()
-                    .collection('watchlists')
-                    .doc(res.user?.uid)
-                    .set({
-                        watchlist: []
-                    }).then(() => {
-                        dispatch({ type: SIGN_UP, payload: user })
-                        onSuccess();
-                    })
-                   
+                        .collection('watchlists')
+                        .doc(res.user?.uid)
+                        .set({
+                            watchlist: []
+                        }).then(() => {
+                            dispatch({ type: SIGN_UP, payload: user })
+                            onSuccess();
+                        })
+
                 })
         })
         .catch(err => {
@@ -118,12 +159,13 @@ export const signUp = (email, password, onSuccess, onError) => dispatch => {
         })
 }
 
-export const signOut = () => dispatch => {
+export const signOut = callback => dispatch => {
     firebase.auth()
         .signOut()
         .then(async () => {
             await AsyncStorage.removeItem('token');
             dispatch({ type: SIGN_OUT });
+            callback();
         })
 }
 

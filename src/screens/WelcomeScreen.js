@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native'
 import { SvgXml } from 'react-native-svg'
-import { Feather, FontAwesome5  } from '@expo/vector-icons';
+import { Feather, FontAwesome5  } from '@expo/vector-icons'
 import { logo } from '../styles/svgImages'
 import { mainBackgroundColor, mainActionColor, btn, link } from '../styles/_common'
 
@@ -13,14 +13,17 @@ const WelcomeScreen = ({ navigation }) => {
             <View style={styles.content}>
                 <SvgXml xml={logo} />
                 <Image style={styles.bigLogo} source={require("../../assets/app-imgs/TMM-logo.png")} />
+                
                 <TouchableOpacity style={[btn.wrapper, styles.button]} onPress={() => navigation.navigate("Auth", { title: "Sign in" })}>
                     <Feather name="mail" size={24} color={mainActionColor} />
                     <Text style={btn.text}>Sign in with email</Text>
                 </TouchableOpacity>
+
                 <TouchableOpacity style={[btn.wrapper, styles.button]}>
                     <FontAwesome5 name="facebook" size={24} color="blue" />
                     <Text style={btn.text}>Sign in with Facebook</Text>
                 </TouchableOpacity>
+
                 <View style={link.linkBlock}>
                     <Text style={link.linkBlockText}>Need an account?</Text>
                     <TouchableOpacity onPress={() => navigation.navigate("Auth", { title: "Sign up" })}>

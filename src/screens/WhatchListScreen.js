@@ -16,12 +16,27 @@ const sortBy = {
 
 const WhatchListScreen = ({ watchlist, fetchWatchList }) => {
     const [currentSort, setCurrentSort] = useState(1);
+    const [newWatchList, setNewWatchList] = useState(watchlist);
 
-    const renderItem = ({ item }) => <MovieCard movie={item}/>
+    const renderItem = ({ item }) => <MovieCard movie={item} />
 
     useEffect(() => {
         fetchWatchList();
     }, [])
+
+    useEffect(() => {
+        if (currentSort === 1) {
+            setNewWatchList(watchlist.sort((a, b) => {
+                return b.rating - a.rating
+            }));
+        } else {
+            setNewWatchList(watchlist.sort((a, b) => {
+                if (a.title < b.title) { return -1; }
+                if (a.title > b.title) { return 1; }
+                return 0;
+            }));
+        }
+    }, [watchlist, currentSort])
 
     return (
         <Container>
@@ -36,7 +51,7 @@ const WhatchListScreen = ({ watchlist, fetchWatchList }) => {
                     <Picker
                         style={styles.sortPicker}
                         mode="dropdown"
-                        selectedValue={Object.entries(sortBy)[0][1]}
+                        selectedValue={currentSort}
                         onValueChange={itemValue => {
                             setCurrentSort(itemValue)
                         }}>
@@ -46,9 +61,9 @@ const WhatchListScreen = ({ watchlist, fetchWatchList }) => {
                     </Picker>
                 </View>
             </View>
-            <FlatList 
-                style={{alignSelf: 'center'}}
-                data={watchlist}
+            <FlatList
+                style={{ alignSelf: 'center' }}
+                data={newWatchList}
                 keyExtractor={item => item.id.toString()}
                 renderItem={renderItem}
                 showsVerticalScrollIndicator={false}
@@ -63,7 +78,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         width: '100%',
         height: 40,
-        marginTop: 5
+        marginTop: 5,
+        marginLeft: 15
     },
     sortPickerWrapper: {
         width: '30%',
@@ -88,4 +104,4 @@ const mapDispatchToProps = dispatch => bindActionCreators({
     fetchWatchList
 }, dispatch)
 
-export default connect(mapStateToProps, mapDispatchToProps)(WhatchListScreen) 
+export default connect(mapStateToProps, mapDispatchToProps)(WhatchListScreen)

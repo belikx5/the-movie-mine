@@ -97,7 +97,7 @@ const AuthForm = ({ navigation, clearAuthError, onSubmit, auth, linkQuestion, li
                     )}
                 </View>
                 {loading
-                    ? <ActivityIndicator size="small" color="lightskyblue" />
+                    ? <ActivityIndicator size="small" color={commonStyles.mainActionColor} />
                     : (
                         <TouchableOpacity
                             style={isSubmitDisbled() ? [commonStyles.btn.wrapper, styles.orangeButton, styles.disabledButton] : [commonStyles.btn.wrapper, styles.orangeButton]}

@@ -67,3 +67,13 @@ export const h2 = StyleSheet.create({
         color: '#fff'
     }
 })
+
+export const profileImage = StyleSheet.create({
+    image: {
+        width: 140,
+        height: 140,
+        borderRadius: 70,
+        borderWidth: 2,
+        borderColor: mainGreyColor
+    }
+})

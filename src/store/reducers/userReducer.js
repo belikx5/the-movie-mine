@@ -7,11 +7,12 @@ import {
     CLEAR_ERROR,
     FETCH_WATCHLIST,
     ADD_TO_WATCHLIST,
-    REMOVE_FROM_WATCHLIST
+    REMOVE_FROM_WATCHLIST,
+    EDIT_PROFILE
 } from '../actionTypes';
 
 const initialState = {
-    currentUser: {},
+    currentUser: null,
     auth: {
         error: ''
     },
@@ -36,6 +37,8 @@ export default (state = initialState, action) => {
             return { ...state, watchlist: [...state.watchlist, action.payload] }
         case REMOVE_FROM_WATCHLIST:
             return { ...state, watchlist: [...state.watchlist.filter(m => m.id !== action.payload)] }
+        case EDIT_PROFILE:
+            return { ...state, currentUser: action.payload };    
         case SIGN_OUT:
             return initialState;
         default:

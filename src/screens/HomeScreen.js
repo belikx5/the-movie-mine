@@ -9,6 +9,7 @@ import {
     fetchMoviesByGenre,
     findMoviesByName
 } from '../store/actions/moviesActions'
+import { fetchWatchList } from '../store/actions/userActions'
 import Container from '../components/Container'
 import MovieCardsList from '../components/MovieCardsList'
 import SeacrhBar from '../components/SearchBar'
@@ -20,7 +21,8 @@ const HomeScreen = ({
     fetchNowPlaying,
     fetchTopRated,
     fetchMoviesByGenre,
-    findMoviesByName
+    findMoviesByName,
+    fetchWatchList
 }) => {
     const [selectedGenre, setSelectedGenre] = useState(28);
     const [searchTerm, setSearchTerm] = useState('');
@@ -31,6 +33,7 @@ const HomeScreen = ({
         fetchTopRated();
         fetchGenres();
         fetchMoviesByGenre(selectedGenre);
+        fetchWatchList();
     }, [])
     
     useEffect(() => {
@@ -66,16 +69,17 @@ const HomeScreen = ({
     )
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
     movies: state.movies
 })
 
-const mapDispatchToProps = (dispatch) => bindActionCreators({
+const mapDispatchToProps = dispatch => bindActionCreators({
     fetchGenres,
     fetchNowPlaying,
     fetchTopRated,
     fetchMoviesByGenre,
-    findMoviesByName
+    findMoviesByName,
+    fetchWatchList
 }, dispatch)
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen)
