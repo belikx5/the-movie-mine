@@ -9,7 +9,7 @@ import {
     ADD_TO_WATCHLIST,
     REMOVE_FROM_WATCHLIST,
     EDIT_PROFILE
-} from '../actionTypes';
+} from '../actionTypes'
 
 const initialState = {
     currentUser: null,

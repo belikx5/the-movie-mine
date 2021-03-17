@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { useRoute } from '@react-navigation/native'
-import { View, Text, Image, StyleSheet, ScrollView, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native'
+import { View, Text, Image, StyleSheet, ScrollView, FlatList, ActivityIndicator, TouchableOpacity, RefreshControl } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
-import { AntDesign, Entypo, MaterialCommunityIcons } from '@expo/vector-icons'
+import { AntDesign, Entypo, MaterialCommunityIcons, Feather } from '@expo/vector-icons'
 import { errorColor, h2, mainActionColor, mainGreyColor } from '../styles/_common'
 import {
     fetchMovieDetails,
@@ -16,6 +16,8 @@ import {
     addToWatchList,
     removeFromWatchList
 } from '../store/actions/userActions'
+import { savePosterToDevice } from '../services/savePhotoToDevice'
+
 import Container from '../components/Container'
 import GenreItem from '../components/GenreItem'
 import MovieCardsList from '../components/MovieCardsList'
@@ -34,35 +36,70 @@ const DetailsScreen = ({
 }) => {
 
     const [playVideo, setPlayVideo] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
+    const [savingPoster, setSavingPoster] = useState(false);
     const route = useRoute();
     const id = route.params.movieId;
+
     useEffect(() => {
         if (!selectedMovie || (selectedMovie && selectedMovie.id !== id)) {
-            fetchMovieDetails(id);
-            fetchMovieCast(id);
-            fetchSimilarMovies(id);
-            fetchMovieDetailsTrailer(id);
+            fetchMovieData();
         }
     }, [])
+
+    const onSavePoster = () => {
+        setSavingPoster(true);
+        savePosterToDevice(
+            selectedMovie.title,
+            selectedMovie.poster,
+            () => setSavingPoster(false)
+        );
+    }
+
+    const onRefresh = () => {
+        setRefreshing(true);
+        setTimeout(() => {
+            fetchMovieData();
+            setRefreshing(false);
+        }, 1500)
+    }
+
+    const fetchMovieData = () => {
+        fetchMovieDetails(id);
+        fetchMovieCast(id);
+        fetchSimilarMovies(id);
+        fetchMovieDetailsTrailer(id);
+    }
+
+    const renderRefreshControl = () => <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+
+    const renderSavePosterButton = () => {
+        if (savingPoster) return <ActivityIndicator size="large" color={mainActionColor} />
+        else return <TouchableOpacity onPress={onSavePoster}>
+            <Feather style={styles.actionsItem} name="download" size={30} color={mainActionColor} />
+        </TouchableOpacity>
+    }
 
     const renderWatchlistActon = () => {
         if (watchlist.filter(w => w.id === selectedMovie.id).length > 0)
             return (
                 <TouchableOpacity onPress={() => removeFromWatchList(selectedMovie.id)}>
-                    <MaterialCommunityIcons style={{ marginTop: 10 }} name="playlist-remove" size={32} color={errorColor} />
+                    <MaterialCommunityIcons style={styles.actionsItem} name="playlist-remove" size={32} color={errorColor} />
                 </TouchableOpacity>
             )
         else
             return (
                 <TouchableOpacity onPress={() => addToWatchList(selectedMovie)}>
-                    <Entypo style={{ marginTop: 10 }} name="plus" size={32} color="#52FF00" />
+                    <Entypo style={styles.actionsItem} name="plus" size={32} color="#52FF00" />
                 </TouchableOpacity>
 
             )
     }
 
     const renderMovieDetails = () => (
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <ScrollView
+            contentContainerStyle={{ flexGrow: 1 }}
+            refreshControl={renderRefreshControl()} >
             <View style={styles.headerContainer}>
                 {playVideo
                     ? <View style={{ flex: 1 }}>
@@ -94,7 +131,10 @@ const DetailsScreen = ({
                 <View style={styles.dataContainerMain}>
                     <View style={styles.dataContainerActions}>
                         <Text style={styles.dataH2}>Genre</Text>
-                        {renderWatchlistActon()}
+                        <View style={styles.actions}>
+                            {renderWatchlistActon()}
+                            {renderSavePosterButton()}
+                        </View>
                     </View>
                     <View style={styles.dataGenresList}>
                         {selectedMovie.genres.map(g => <GenreItem key={g.id} genre={g.name} />)}
@@ -124,19 +164,25 @@ const DetailsScreen = ({
                         </View>
                     </View>
                     <View style={styles.dataHomepageContainer}>
-                        <Text style={{ ...h2.text, color: mainGreyColor }}>Homepage</Text>
-                        <Text style={[
-                            styles.dataText,
-                            styles.dataTextHighlighted,
-                            styles.dataLink,
-                            { marginLeft: 15 }
-                        ]}>
-                            {selectedMovie.homepage.replace(/http(s)?:\/\//, "")}
-                        </Text>
+                        {selectedMovie.homepage
+                            ? (<>
+                                <Text style={{ ...h2.text, color: mainGreyColor }}>Homepage</Text>
+                                <Text style={[
+                                    styles.dataText,
+                                    styles.dataTextHighlighted,
+                                    styles.dataLink,
+                                    { marginLeft: 15 }
+                                ]}>
+                                    {selectedMovie.homepage.replace(/http(s)?:\/\//, "")}
+                                </Text>
+                            </>
+                            )
+                            : null
+                        }
                     </View>
                 </View>
 
-                {selectedMovie.cast
+                {selectedMovie?.cast?.length
                     ? <>
                         <Text style={styles.dataH2}>Casts</Text>
                         <FlatList
@@ -149,7 +195,7 @@ const DetailsScreen = ({
                     </>
                     : null
                 }
-                {selectedMovie.similarMovies
+                {selectedMovie?.similarMovies?.length
                     ? <MovieCardsList listTitle="Similar Movies" movies={selectedMovie.similarMovies} />
                     : null
                 }
@@ -162,7 +208,7 @@ const DetailsScreen = ({
         <Container>
             {selectedMovie && selectedMovie.id === id
                 ? renderMovieDetails()
-                : <ActivityIndicator style={{ marginTop: '20%' }} size="small" color={mainActionColor} />
+                : <ActivityIndicator style={{ marginTop: '20%' }} size="large" color={mainActionColor} />
             }
         </Container>
     )
@@ -211,6 +257,14 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center'
+    },
+    actions: {
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
+    actionsItem: {
+        marginTop: 10,
+        marginLeft: 10
     },
     dataH2: {
         ...h2.text,

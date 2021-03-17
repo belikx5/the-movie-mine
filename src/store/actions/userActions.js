@@ -1,5 +1,7 @@
 import firebase from '../../config/firebase'
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import Constants from 'expo-constants'
+import * as Facebook from 'expo-facebook'
 import {
     AUTH_ERROR,
     AUTH_SUCCESS,
@@ -11,7 +13,7 @@ import {
     REMOVE_FROM_WATCHLIST,
     FETCH_WATCHLIST,
     EDIT_PROFILE
-} from '../actionTypes';
+} from '../actionTypes'
 
 
 
@@ -122,6 +124,52 @@ export const signIn = (email, password, onSuccess, onError) => dispatch => {
             dispatch({ type: AUTH_ERROR, payload: err.code });
             onError();
         })
+}
+
+export const signInWithFacebook = onSuccess => async dispatch => {
+
+    try {
+        await Facebook.initializeAsync({
+            appId: Constants.manifest.extra['facebookAppId'],
+        });
+        const { type, token } = await Facebook.logInWithReadPermissionsAsync({
+            permissions: ['public_profile']
+        });
+        if (type === 'success') {
+            await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+            const credential = firebase.auth.FacebookAuthProvider.credential(token);
+            const facebookProfileData = await firebase.auth().signInWithCredential(credential);
+            const localToken = facebookProfileData.user.uid;
+            await AsyncStorage.setItem('token', localToken || '');
+            if (facebookProfileData.additionalUserInfo.isNewUser) {
+                const uid = facebookProfileData.user.uid;
+                firebase.firestore()
+                    .collection('users')
+                    .doc(uid)
+                    .set({
+                        uid,
+                        avatar: facebookProfileData.additionalUserInfo.profile['picture']['data']['url'] || '',
+                        nickname: facebookProfileData.user.displayName,
+                        email: facebookProfileData.user.email || ''
+                    }).then(() => {
+                        firebase.firestore()
+                            .collection('watchlists')
+                            .doc(uid)
+                            .set({
+                                watchlist: []
+                            }).then(() => {
+                                dispatch({ type: AUTH_SUCCESS });
+                                onSuccess();
+                            })
+                    })
+            } else {
+                dispatch({ type: AUTH_SUCCESS });
+                onSuccess();
+            }
+        }
+    } catch (error) {
+        dispatch({ type: AUTH_ERROR, payload: error.code });
+    }
 }
 
 export const signUp = (email, password, onSuccess, onError) => dispatch => {

@@ -26,7 +26,7 @@ const AuthForm = ({ navigation, clearAuthError, onSubmit, auth, linkQuestion, li
 
     useEffect(() => {
         navigation.addListener("focus", () => {
-            clearAuthError()
+            clearAuthError();
         })
         return () => navigation.removeListener("focus", () => { clearAuthError() })
     }, [])
@@ -52,7 +52,13 @@ const AuthForm = ({ navigation, clearAuthError, onSubmit, auth, linkQuestion, li
 
         if (!emailError && !passwordError) {
             setLoading(true);
-            onSubmit(email, password, () => navigation.navigate('MainFlow'), () => setLoading(false));
+            onSubmit(email, password, () => {
+                navigation.navigate('MainFlow');
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: "MainFlow"}]
+                });
+            }, () => setLoading(false));
         }
     };
     return (

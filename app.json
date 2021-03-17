@@ -21,9 +21,11 @@
       "backgroundColor": "#0B123F"
     },
     "android": {
+      "useNextNotificationsApi": true,
       "backgroundColor": "#0B123F",
+      "icon": "./assets/app-imgs/TMM-logo-square.png",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/app-imgs/TMM-logo-square.png",
         "backgroundColor":  "#0B123F"
       }
     },
@@ -38,7 +40,8 @@
       "storageBucket":"the-movie-mine.appspot.com",
       "messagingSenderId": "968538550729",
       "appId": "1:968538550729:web:792209098b43b529cc7818",
-      "tmdbApiKey": "1332ed216981529a4ab13e7d227c4143"
+      "tmdbApiKey": "1332ed216981529a4ab13e7d227c4143",
+      "facebookAppId": "814530152474274"
     }
   }
 }

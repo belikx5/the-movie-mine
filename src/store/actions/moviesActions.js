@@ -9,7 +9,7 @@ import {
     FETCH_MOVIE_TRAILER,
     FETCH_SIMILAR_MOVIES,
     FETCH_MOVIE_CAST
-} from '../actionTypes';
+} from '../actionTypes'
 
 const POSTER_URL = 'https://image.tmdb.org/t/p/original';
 const YOUTUBE_URL = 'https://www.youtube.com/embed/';

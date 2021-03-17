@@ -9,21 +9,21 @@ import { fetchUser, signOut } from '../store/actions/userActions'
 import Container from '../components/Container'
 
 
-const ProfileScreen = ({ 
-    currentUser, 
-    fetchUser, 
+const ProfileScreen = ({
+    currentUser,
+    fetchUser,
     signOut
 }) => {
     const navigation = useNavigation();
 
     useEffect(() => {
-        if(!currentUser)
+        if (!currentUser)
             fetchUser();
     }, [])
-    if(!currentUser){
+    if (!currentUser) {
         return <Container>
             <View style={styles.profileContainer}>
-                <ActivityIndicator size="large" color={mainActionColor}/>
+                <ActivityIndicator size="large" color={mainActionColor} />
             </View>
         </Container>
     }
@@ -32,16 +32,16 @@ const ProfileScreen = ({
             navigation.navigate("Welcome");
             navigation.reset({
                 index: 0,
-                routes: [{ name: "Welcome"}]
+                routes: [{ name: "Welcome" }]
             });
         });
-        
+
     }
     return (
         <Container>
             <View style={styles.profileContainer}>
                 <View style={styles.header}>
-                    <Image style={profileImage.image} 
+                    <Image style={profileImage.image}
                         source={currentUser.avatar ? { uri: currentUser.avatar } : require("../../assets/app-imgs/actor-not-found.jpg")} />
                     <View style={styles.headerData}>
                         <Text style={[styles.text, styles.h1]}>{currentUser.nickname}</Text>
@@ -51,22 +51,28 @@ const ProfileScreen = ({
                     </View>
                 </View>
                 <Text style={h2.text}>Info</Text>
-                <View style={styles.infoItem}>
-                    <Feather name="mail" style={styles.icon} size={24} color={mainActionColor} />
-                    <Text style={styles.text}>{currentUser.email}</Text>
-                </View>
-                <View style={styles.infoItem}>
-                    <FontAwesome5 name="facebook" style={styles.icon} size={24} color="blue" />
-                    <Text style={styles.text}>@JohnDoeeee</Text>
-                </View>
+                {currentUser.email
+                    ? <View style={styles.infoItem}>
+                        <Feather name="mail" style={styles.icon} size={24} color={mainActionColor} />
+                        <Text style={styles.text}>{currentUser.email}</Text>
+                    </View>
+                    : null
+                }
+                {currentUser.nickname
+                    ? <View style={styles.infoItem}>
+                        <FontAwesome5 name="facebook" style={styles.icon} size={24} color="blue" />
+                        <Text style={styles.text}>@{currentUser.nickname.split(' ').join('')}</Text>
+                    </View>
+                    : null
+                }
                 <View style={styles.actions}>
-                    <TouchableOpacity 
-                        style={[btn.wrapper, {width: '45%'}]} 
+                    <TouchableOpacity
+                        style={[btn.wrapper, { width: '45%' }]}
                         onPress={() => navigation.navigate("EditProfile")}>
                         <Text style={btn.text}>Edit</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity 
-                        style={[btn.wrapper, {width: '45%'}]} 
+                    <TouchableOpacity
+                        style={[btn.wrapper, { width: '45%' }]}
                         onPress={onSignOut}>
                         <Text style={btn.text}>Sign out</Text>
                     </TouchableOpacity>
@@ -123,6 +129,6 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => bindActionCreators({
     fetchUser,
     signOut
-}, dispatch)    
+}, dispatch)
 
-export default connect(mapStateToProps, mapDispatchToProps)(ProfileScreen) 
+export default connect(mapStateToProps, mapDispatchToProps)(ProfileScreen)
