@@ -70,9 +70,9 @@ export const h2 = StyleSheet.create({
 
 export const profileImage = StyleSheet.create({
     image: {
-        width: 140,
-        height: 140,
-        borderRadius: 70,
+        width: 110,
+        height: 110,
+        borderRadius: 55,
         borderWidth: 2,
         borderColor: mainGreyColor
     }

@@ -27,7 +27,6 @@ const HomeScreen = ({
     const [selectedGenre, setSelectedGenre] = useState(28);
     const [searchTerm, setSearchTerm] = useState('');
 
-
     useEffect(() => {
         fetchNowPlaying();
         fetchTopRated();

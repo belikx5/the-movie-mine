@@ -8,7 +8,14 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor":  "#0B123F"
+      "backgroundColor": "#0B123F"
+    },
+    "hooks": {
+      "postPublish": [
+        {
+          "file": "expo-error-log"
+        }
+      ]
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -26,18 +33,19 @@
       "icon": "./assets/app-imgs/TMM-logo-square.png",
       "adaptiveIcon": {
         "foregroundImage": "./assets/app-imgs/TMM-logo-square.png",
-        "backgroundColor":  "#0B123F"
-      }
+        "backgroundColor": "#0B123F"
+      },
+      "package": "com.belikx5.themoviemine"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "backgroundColor" : "#0B123F",
+    "backgroundColor": "#0B123F",
     "extra": {
       "apiKey": "AIzaSyCvgyVSo3z9eygMLCROVTciIa5b8Q-tO08",
       "authDomain": "the-movie-mine.firebaseapp.com",
       "projectId": "the-movie-mine",
-      "storageBucket":"the-movie-mine.appspot.com",
+      "storageBucket": "the-movie-mine.appspot.com",
       "messagingSenderId": "968538550729",
       "appId": "1:968538550729:web:792209098b43b529cc7818",
       "tmdbApiKey": "1332ed216981529a4ab13e7d227c4143",

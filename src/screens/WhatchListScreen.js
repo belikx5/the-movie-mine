@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native'
+import { View, Text, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import { useNavigation } from '@react-navigation/native'
 import { AntDesign } from '@expo/vector-icons'
 import { Picker } from '@react-native-picker/picker'
 import { fetchWatchList } from '../store/actions/userActions'
@@ -14,28 +15,30 @@ const sortBy = {
     Name: 2
 }
 
+const alphabeticalSort = list => list.sort((a, b) => {
+    if (a.title < b.title) { return -1; }
+    if (a.title > b.title) { return 1; }
+    return 0;
+})
+const ratingSort = list => list.sort((a, b) => {
+    return b.rating - a.rating
+})
+
 const WhatchListScreen = ({ watchlist, fetchWatchList }) => {
     const [currentSort, setCurrentSort] = useState(1);
-    const [newWatchList, setNewWatchList] = useState(watchlist);
+    //const [newWatchList, setNewWatchList] = useState(watchlist);
     const [listEmpty, setListEmpty] = useState(false);
     const [fetchingList, setFetchingList] = useState(false);
-
-    const renderItem = ({ item }) => <MovieCard movie={item} />
+    const navigation = useNavigation();
+    const renderItem = ({ item }) => <TouchableOpacity onPress={() => navigation.push("Details", { movieId: item.id })}>
+        <MovieCard movie={item} />
+    </TouchableOpacity>
 
     useEffect(() => {
         setFetchingList(true);
         fetchWatchList();
     }, [])
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            if (!newWatchList.length)
-                setListEmpty(true);
-            setFetchingList(false);
-        }, 5000);
-
-        return () => clearTimeout(timer);
-    }, [newWatchList])
 
     useEffect(() => {
         if (watchlist.length) {
@@ -44,20 +47,15 @@ const WhatchListScreen = ({ watchlist, fetchWatchList }) => {
         }
         if (!watchlist.length)
             setListEmpty(true);
-        if (currentSort === 1) {
-            const newList = watchlist.sort((a, b) => {
-                return b.rating - a.rating
-            })
-            setNewWatchList(newList);
-        } else {
-            const newList = watchlist.sort((a, b) => {
-                if (a.title < b.title) { return -1; }
-                if (a.title > b.title) { return 1; }
-                return 0;
-            })
-            setNewWatchList(newList);
-        }
-    }, [watchlist, currentSort])
+
+        const timer = setTimeout(() => {
+            if (!watchlist.length)
+                setListEmpty(true);
+            setFetchingList(false);
+        }, 5000);
+
+        return () => clearTimeout(timer);
+    }, [watchlist])
 
     const renderWatchlist = () => <>
         <View style={styles.header}>
@@ -84,7 +82,10 @@ const WhatchListScreen = ({ watchlist, fetchWatchList }) => {
         <FlatList
             style={{ alignSelf: 'center' }}
             extraData={watchlist}
-            data={newWatchList}
+            data={currentSort === 1
+                ? ratingSort(watchlist)
+                : alphabeticalSort(watchlist)
+            }
             keyExtractor={item => item.id.toString()}
             renderItem={renderItem}
             showsVerticalScrollIndicator={false}
@@ -94,7 +95,7 @@ const WhatchListScreen = ({ watchlist, fetchWatchList }) => {
     return (
         <Container>
             {fetchingList
-                ? <ActivityIndicator style={{marginTop: 30}} size="large" color={mainActionColor} />
+                ? <ActivityIndicator style={{ marginTop: 30 }} size="large" color={mainActionColor} />
                 : (
                     !listEmpty
                         ? renderWatchlist()

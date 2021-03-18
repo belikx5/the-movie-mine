@@ -1,17 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { useRoute } from '@react-navigation/native'
-import { View, Text, Image, StyleSheet, ScrollView, FlatList, ActivityIndicator, TouchableOpacity, RefreshControl } from 'react-native'
+import { useNavigation, useRoute } from '@react-navigation/native'
+import { View, Text, Image, StyleSheet, Linking, ScrollView, FlatList, ActivityIndicator, TouchableOpacity, RefreshControl } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { AntDesign, Entypo, MaterialCommunityIcons, Feather } from '@expo/vector-icons'
 import { errorColor, h2, mainActionColor, mainGreyColor } from '../styles/_common'
-import {
-    fetchMovieDetails,
-    fetchMovieCast,
-    fetchSimilarMovies,
-    fetchMovieDetailsTrailer
-} from '../store/actions/moviesActions'
+import { fetchMovieDetails } from '../store/actions/moviesActions'
 import {
     addToWatchList,
     removeFromWatchList
@@ -28,9 +23,6 @@ const DetailsScreen = ({
     selectedMovie,
     watchlist,
     fetchMovieDetails,
-    fetchMovieCast,
-    fetchSimilarMovies,
-    fetchMovieDetailsTrailer,
     addToWatchList,
     removeFromWatchList
 }) => {
@@ -39,13 +31,20 @@ const DetailsScreen = ({
     const [refreshing, setRefreshing] = useState(false);
     const [savingPoster, setSavingPoster] = useState(false);
     const route = useRoute();
+    const navigation = useNavigation();
     const id = route.params.movieId;
 
     useEffect(() => {
-        if (!selectedMovie || (selectedMovie && selectedMovie.id !== id)) {
-            fetchMovieData();
-        }
+        navigation.addListener("focus", fetchData);
+
+        return () => navigation.removeListener("focus", fetchData);
     }, [])
+
+    const fetchData = () => {
+        if (!selectedMovie || (selectedMovie && selectedMovie.id !== id)) {
+            fetchMovieDetails(id);
+        }
+    }
 
     const onSavePoster = () => {
         setSavingPoster(true);
@@ -59,16 +58,9 @@ const DetailsScreen = ({
     const onRefresh = () => {
         setRefreshing(true);
         setTimeout(() => {
-            fetchMovieData();
+            fetchMovieDetails(id);
             setRefreshing(false);
         }, 1500)
-    }
-
-    const fetchMovieData = () => {
-        fetchMovieDetails(id);
-        fetchMovieCast(id);
-        fetchSimilarMovies(id);
-        fetchMovieDetailsTrailer(id);
     }
 
     const renderRefreshControl = () => <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -172,7 +164,8 @@ const DetailsScreen = ({
                                     styles.dataTextHighlighted,
                                     styles.dataLink,
                                     { marginLeft: 15 }
-                                ]}>
+                                ]}
+                                    onPress={() => Linking.openURL(selectedMovie.homepage)}>
                                     {selectedMovie.homepage.replace(/http(s)?:\/\//, "")}
                                 </Text>
                             </>
@@ -305,9 +298,6 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => bindActionCreators({
     fetchMovieDetails,
-    fetchMovieCast,
-    fetchSimilarMovies,
-    fetchMovieDetailsTrailer,
     addToWatchList,
     removeFromWatchList
 }, dispatch)

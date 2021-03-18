@@ -58,8 +58,8 @@ const onDownloadEnd = () => {
       
     Notifications.scheduleNotificationAsync({
         content: {
-            title: 'Success',
-            body: 'Poster saved successful'
+            title: 'TheMovieMine Action Report',
+            body: 'Poster saved successfully'
         },
         trigger: null
         

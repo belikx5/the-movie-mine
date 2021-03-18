@@ -44,7 +44,9 @@ const ProfileScreen = ({
                     <Image style={profileImage.image}
                         source={currentUser.avatar ? { uri: currentUser.avatar } : require("../../assets/app-imgs/actor-not-found.jpg")} />
                     <View style={styles.headerData}>
-                        <Text style={[styles.text, styles.h1]}>{currentUser.nickname}</Text>
+                        <View style={styles.h1Wrapper}>
+                            <Text style={[styles.text, styles.h1]}>{currentUser.nickname}</Text>
+                        </View>
                         <TouchableOpacity onPress={() => navigation.navigate("WhatchList")}>
                             <Text style={[h2.text, styles.link]}>My watch list</Text>
                         </TouchableOpacity>
@@ -95,7 +97,8 @@ const styles = StyleSheet.create({
     },
     headerData: {
         justifyContent: 'space-around',
-        marginLeft: 15
+        marginLeft: 15,
+        flex: 1
     },
     infoItem: {
         flexDirection: 'row',
@@ -111,8 +114,12 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: '#fff'
     },
+    h1Wrapper: {
+        flexDirection:'row'
+    },
     h1: {
-        fontSize: 36
+        fontSize: 32,
+        flexWrap: 'wrap'
     },
     link: {
         color: mainActionColor

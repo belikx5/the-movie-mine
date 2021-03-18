@@ -33,12 +33,34 @@ export const fetchMovieDetails = movieId => async dispatch => {
             runtime: data['runtime'],
         }
         dispatch({ type: FETCH_MOVIE_DETAILS, payload: movie });
+        dispatch({ type: FETCH_MOVIE_TRAILER, payload: await fetchMovieTrailer(movieId) });
+        dispatch({ type: FETCH_MOVIE_CAST, payload: await fetchCast(movieId) });
+        dispatch({ type: FETCH_SIMILAR_MOVIES, payload: await fetchSimilarMovies(movieId) });
     } catch (error) {
         dispatch({ type: FETCH_MOVIE_DETAILS, payload: null });
     }
 }
+const fetchSimilarMovies = async movieId => {
+    try {
+        const { data } = await tmdb.get(`/movie/${movieId}/similar`);
+        const modifiedData = modifyResultsArray(data);
+        return modifiedData;
+    } catch (error) {
+        return [];
+    }
+}
 
-export const fetchMovieCast = movieId => async dispatch => {
+const fetchMovieTrailer = async movieId => {
+    try {
+        const { data } = await tmdb.get(`/movie/${movieId}/videos`);
+        const requiredVideo = data['results'].filter(v => v['type'] === 'Trailer' && v['site'] === 'YouTube')[0];
+        const videoUrl = YOUTUBE_URL + requiredVideo['key'];
+        return videoUrl;
+    } catch (error) {
+        return '';
+    }
+}
+const fetchCast = async movieId => {
     try {
         const { data } = await tmdb.get(`/movie/${movieId}/credits`);
         const cast = data['cast'].length > 20 ? data['cast'].slice(0, 20) : data['cast'];
@@ -51,29 +73,9 @@ export const fetchMovieCast = movieId => async dispatch => {
                 image
             }
         });
-        dispatch({ type: FETCH_MOVIE_CAST, payload: modifiedCast });
+        return modifiedCast;
     } catch (error) {
-        dispatch({ type: FETCH_MOVIE_CAST, payload: [] });
-    }
-}
-export const fetchMovieDetailsTrailer = movieId => async dispatch => {
-    try {
-        const { data } = await tmdb.get(`/movie/${movieId}/videos`);
-        const requiredVideo = data['results'].filter(v => v['type'] === 'Trailer' && v['site'] === 'YouTube')[0];
-        const videoUrl = YOUTUBE_URL + requiredVideo['key'];
-        dispatch({ type: FETCH_MOVIE_TRAILER, payload: videoUrl });
-    } catch (error) {
-        dispatch({ type: FETCH_MOVIE_TRAILER, payload: '' });
-    }
-}
-
-export const fetchSimilarMovies = movieId => async dispatch => {
-    try {
-        const { data } = await tmdb.get(`/movie/${movieId}/similar`);
-        const modifiedData = modifyResultsArray(data);
-        dispatch({ type: FETCH_SIMILAR_MOVIES, payload: modifiedData });
-    } catch (error) {
-        dispatch({ type: FETCH_SIMILAR_MOVIES, payload: [] });
+        return [];
     }
 }
 

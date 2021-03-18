@@ -13,7 +13,14 @@ import validate from '../services/formValidation'
 import defineAuthError from '../services/authErrorDefine'
 import * as commonStyles from '../styles/_common'
 
-const AuthForm = ({ navigation, clearAuthError, onSubmit, auth, linkQuestion, linkValue }) => {
+const AuthForm = ({ 
+    navigation, 
+    clearAuthError, 
+    onSubmit, 
+    auth, 
+    linkQuestion, 
+    linkValue 
+}) => {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -25,10 +32,9 @@ const AuthForm = ({ navigation, clearAuthError, onSubmit, auth, linkQuestion, li
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        navigation.addListener("focus", () => {
-            clearAuthError();
-        })
-        return () => navigation.removeListener("focus", () => { clearAuthError() })
+        navigation.addListener("focus", clearAuthError);
+
+        return () => navigation.removeListener("focus", clearAuthError);
     }, [])
 
     const validateField = (fieldName, value) => {

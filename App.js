@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'
 import { Provider } from 'react-redux'
-import { Image } from 'react-native';
-import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import { mainActionColor, mainBackgroundColor } from './src/styles/_common';
+import { Image } from 'react-native'
+import { NavigationContainer } from "@react-navigation/native"
+import { createStackNavigator } from "@react-navigation/stack"
+import { SafeAreaProvider } from "react-native-safe-area-context"
+import { mainActionColor, mainBackgroundColor } from './src/styles/_common'
 import MainFlowTabs from './src/navigation/mainFlow'
 import store from './src/store'
 import firebase from './src/config/firebase'
+require('./src/services/reportError')
 
 import WelcomeScreen from './src/screens/WelcomeScreen'
 import AuthScreen from './src/screens/AuthScreen'
@@ -28,12 +29,8 @@ export default function App() {
 
   useEffect(()=>{
      const unsubscribe = firebase.auth().onAuthStateChanged(user => {
-      if (user) {
         setLoading(false);
-      } else {
-        setLoading(false);
-      }
-      return unsubscribe
+      return unsubscribe;
     });
   }, [])
 

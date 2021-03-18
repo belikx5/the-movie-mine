@@ -42,7 +42,7 @@ export const addToWatchList = movie => (dispatch, getState) => {
         backPoster: movie.backPoster,
         rating: movie.rating
     };
-    console.log(modifiedMovie)
+
     firebase.firestore()
         .collection('watchlists')
         .doc(firebase.auth().currentUser?.uid)
@@ -103,7 +103,7 @@ const saveAvatar = async avatarUri => {
 export const tryLocalSignin = (onSuccess, onError) => async dispatch => {
     const token = await AsyncStorage.getItem('token');
 
-    if (token) {
+    if (token && firebase.auth().currentUser?.uid) {
         dispatch({ type: AUTH_SUCCESS });
         onSuccess();
     } else {

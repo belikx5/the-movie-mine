@@ -3,7 +3,7 @@ import { View, Text, FlatList, StyleSheet, Pressable } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { Picker } from '@react-native-picker/picker'
 import { AntDesign } from '@expo/vector-icons'
-import { h2, mainActionColor, mainBackgroundColor } from '../styles/_common'
+import { h2, mainActionColor } from '../styles/_common'
 import MovieCard from './MovieCard'
 
 const MovieCardsList = ({
@@ -16,7 +16,7 @@ const MovieCardsList = ({
 }) => {
     const navigation = useNavigation();
     const renderItem = ({ item }) => (
-        <Pressable onPress={() => navigation.navigate("Details", { movieId: item.id })}>
+        <Pressable onPress={() => navigation.push("Details", { movieId: item.id })}>
             <MovieCard movie={item} />
         </Pressable>
     )

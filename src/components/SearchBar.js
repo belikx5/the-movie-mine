@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { View, TextInput, StyleSheet, TouchableOpacity } from 'react-native'
-import { Feather } from '@expo/vector-icons';
-import { mainActionColor, inputField, mainGreyColor } from '../styles/_common';
+import { View, TextInput, StyleSheet, TouchableOpacity, Keyboard } from 'react-native'
+import { Feather, MaterialIcons } from '@expo/vector-icons'
+import { inputField } from '../styles/_common'
 
 const SeacrhBar = ({ setSearchTerm }) => {
     const [text, setText] = useState('');
@@ -12,8 +12,13 @@ const SeacrhBar = ({ setSearchTerm }) => {
         }, 400)
 
         return () => clearTimeout(timer)
-        
     }, [text])
+
+    const onClear = () => {
+        Keyboard.dismiss();
+        setText('');
+    }
+
     return (
         <View style={styles.container}>
             <TextInput
@@ -24,8 +29,11 @@ const SeacrhBar = ({ setSearchTerm }) => {
                 value={text}
                 onChangeText={text => setText(text)}
             />
-            <TouchableOpacity>
-                <Feather name="search" size={24} color="#fff" />
+            <TouchableOpacity onPress={onClear}>
+                {text
+                    ? <MaterialIcons name="clear" size={28} color="#fff" />
+                    : <Feather name="search" size={24} color="#fff" />
+                }
             </TouchableOpacity>
         </View>
     )

@@ -29,17 +29,13 @@ const styles = StyleSheet.create({
         height: '100%',
         width: '100%',
         resizeMode: 'cover',
-        borderRadius: 50,
-        borderBottomRightRadius: 35,
-        borderBottomLeftRadius: 35
+        borderRadius: 50
     },
     itemGradientBackground: {
         height: '100%',
         width: '100%',
         position: 'absolute',
-        borderRadius: 50,
-        borderBottomRightRadius: 35,
-        borderBottomLeftRadius: 35
+        borderRadius: 50
     },
     itemDataContainer: {
         alignItems: 'center',
